@@ -119,7 +119,11 @@ fancy_echo "Updating to latest Rubygems version ..."
   gem update --system
 
 fancy_echo "Installing critical Ruby gems for Rails development ..."
-  gem install bundler pg rails unicorn --no-document
+  gem install bundler pg rails unicorn --no-document --pre
+
+fancy_echo "Configuring Bundler for faster, parallel gem installation ..."
+  number_of_cores=`sysctl -n hw.ncpu`
+  bundle config --global jobs `expr $number_of_cores - 1`
 
 fancy_echo "Installing GitHub CLI client ..."
   curl http://hub.github.com/standalone -sLo ~/.bin/hub
