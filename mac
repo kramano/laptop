@@ -1,5 +1,5 @@
-#!/usr/bin/env zsh
-### end common-components/zsh-shebang
+#!/usr/bin/env bash
+### end common-components/bash-shebang
 
 # Welcome to the thoughtbot laptop script! Be prepared to turn your laptop (or
 # desktop, no haters here) into an awesome development machine.
@@ -13,16 +13,6 @@ trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
 set -e
 ### end common-components/exit-trap
 
-if [ ! -d "$HOME/.bin/" ]; then
-  mkdir "$HOME/.bin"
-fi
-
-if [[ ":$PATH:" != *":$HOME/.bin:"* ]]; then
-  echo 'export PATH="$HOME/.bin:$PATH"' >> ~/.zshrc
-  source ~/.zshrc
-fi
-### end common-components/check-home-bin
-
 fancy_echo() {
   printf "\n%b\n" "$1"
 }
@@ -34,16 +24,20 @@ if [[ -f /etc/zshenv ]]; then
 fi
 ### end mac-components/zsh-fix
 
-if (( $+commands[brew] )); then
+if ! which brew &>/dev/null; then
   fancy_echo "Installing Homebrew, a good OS X package manager ..."
     ruby <(curl -fsS https://raw.github.com/mxcl/homebrew/go/install)
     brew update
 
   if ! grep -qs "recommended by brew doctor" ~/.zshrc; then
     fancy_echo "Put Homebrew location earlier in PATH ..."
-      echo "\n# recommended by brew doctor" >> ~/.zshrc
-      echo "export PATH=\"/usr/local/bin:\$PATH\"\n" >> ~/.zshrc
-      source ~/.zshrc
+      cat >> ~/.zshrc <<EOF
+
+# recommended by brew doctor
+export PATH="/usr/local/bin:\$PATH"
+EOF
+
+      export PATH="/usr/local/bin:$PATH"
   fi
 else
   fancy_echo "Homebrew already installed. Skipping ..."
@@ -86,13 +80,13 @@ fancy_echo "Installing rbenv, to change Ruby versions ..."
   brew install rbenv
 
   if ! grep -qs "rbenv init" ~/.zshrc; then
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
     echo 'eval "$(rbenv init - --no-rehash)"' >> ~/.zshrc
 
     fancy_echo "Enable shims and autocompletion ..."
+      export PATH="$HOME/.rbenv/bin:$PATH"
       eval "$(rbenv init -)"
   fi
-
-  source ~/.zshrc
 
 fancy_echo "Installing rbenv-gem-rehash so the shell automatically picks up binaries after installing gems with binaries..."
   brew install rbenv-gem-rehash
@@ -110,6 +104,16 @@ fancy_echo "Upgrading and linking OpenSSL ..."
 
 export CC=gcc-4.2
 ### end mac-components/compiler-and-libraries
+
+if [[ ! -d "$HOME/.bin/" ]]; then
+  mkdir "$HOME/.bin"
+fi
+
+if [[ ":$PATH:" != *":$HOME/.bin:"* ]]; then
+  echo 'export PATH="$HOME/.bin:$PATH"' >> ~/.zshrc
+  export PATH="$HOME/.bin:$PATH"
+fi
+### end common-components/check-home-bin
 
 fancy_echo "Installing Ruby 2.0.0-p247 ..."
   rbenv install 2.0.0-p247
