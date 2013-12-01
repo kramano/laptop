@@ -37,6 +37,9 @@ fi
 
 fancy_echo "Installing The Silver Searcher (better than ack or grep) to search the contents of files ..."
   brew install the_silver_searcher
+  
+fancy_echo "Installing wget ..."
+  brew install wget
 
 fancy_echo "Installing GitHub CLI client ..."
   curl http://hub.github.com/standalone -sLo ~/.bin/hub
