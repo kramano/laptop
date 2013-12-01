@@ -34,21 +34,6 @@ if [[ -f /etc/zshenv ]]; then
 fi
 ### end mac-components/zsh-fix
 
-if (( $+commands[brew] )); then
-  fancy_echo "Installing Homebrew, a good OS X package manager ..."
-    ruby <(curl -fsS https://raw.github.com/mxcl/homebrew/go/install)
-    brew update
-
-  if ! grep -qs "recommended by brew doctor" ~/.zshrc; then
-    fancy_echo "Put Homebrew location earlier in PATH ..."
-      echo "\n# recommended by brew doctor" >> ~/.zshrc
-      echo "export PATH=\"/usr/local/bin:\$PATH\"\n" >> ~/.zshrc
-      source ~/.zshrc
-  fi
-else
-  fancy_echo "Homebrew already installed. Skipping ..."
-fi
-### end mac-components/homebrew
 
 fancy_echo "Installing The Silver Searcher (better than ack or grep) to search the contents of files ..."
   brew install the_silver_searcher
@@ -58,10 +43,6 @@ fancy_echo "Installing GitHub CLI client ..."
   chmod +x ~/.bin/hub
 ### end common-components/ruby-environment
 
-fancy_echo "Installing Heroku CLI client ..."
-  brew install heroku-toolbelt
-
-fancy_echo "Installing the heroku-config plugin to pull config variables locally to be used as ENV variables ..."
-  heroku plugins:install git://github.com/ddollar/heroku-config.git
-### end mac-components/heroku
+fancy_echo "Installing oh-my-zsh ..."
+        wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
 
